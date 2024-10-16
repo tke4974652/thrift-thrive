@@ -49,7 +49,7 @@ const handleRegister = async () => {
     loading.value = true
     const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
     console.log(userCredential.user)
-    errorMessage.value = "Registration is successful!"
+    alert("Registration is successful!");
     email.value = ''
     password.value = ''
   } catch (error) {
@@ -72,7 +72,7 @@ const handleRegister = async () => {
 }
 
 .buttonBlock {
-  float: ;
+  float: inline-end;
   width: 80px;
   height: 30px;
 }

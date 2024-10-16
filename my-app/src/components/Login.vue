@@ -99,7 +99,7 @@ const handleLogout = async () => {
   color: red; /* Style for error message */
   margin-top: 10px;
 }
-h1, p {
+.header, .description {
   color: white;
 }
 
