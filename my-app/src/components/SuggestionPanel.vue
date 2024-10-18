@@ -12,9 +12,9 @@
   <div class="col-sm-6">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Don't know what to wear?</h5>
-        <p class="card-text">Let our fashionista bot help you out!</p>
-        <a href="#" class="btn btn-success">Fashion Bot</a>
+        <h5 class="card-title">Ready to check out?</h5>
+        <p class="card-text">You can now pay with ApplePay!</p>
+        <a href="#" class="btn btn-success">Cart</a>
       </div>
     </div>
   </div>

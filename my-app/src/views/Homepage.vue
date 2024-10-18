@@ -1,11 +1,14 @@
 <template>
   <div class="homepage">
-    <Navbar @select="handleSelect" />
+    <div class="constant">
+      <Navbar @select="handleSelect" />
 
-    <section class="hero">
-      <SearchBar @search="handleSearch" />
-      <p>Searching for: {{ searchTerm }}</p>
-    </section>
+      <section class="hero">
+        <SearchBar @search="handleSearch" />
+        <!-- <p>Searching for: {{ searchTerm }}</p> -->
+      </section>
+
+    </div>
 
     <div class="home" v-if="!showMarketplace">
       <section class="content">
@@ -65,16 +68,25 @@ function toggleFashionBot() {
 }
 .hero {
   text-align: center;
-  padding: 50px 20px;
+  padding: 20px 20px 10px 20px; /* Increased padding to account for fixed navbar */
   background-color: black;
   color: white; /* Updated for visibility */
 }
-.home {
-  padding: 0px 50px;
+
+.home, .marketplace{
+  padding: 180px 50px 50px 50px; /* Add padding to avoid overlap with fixed navbar */
 }
 .content {
   padding: 20px;
   text-align: center;
   color: white;
+}
+.constant {
+  position: fixed;
+  top: 0; /* Fixes it to the top */
+  left: 0;
+  right: 0; /* Stretches across the viewport */
+  z-index: 1000; /* Ensure it's above other content */
+  background-color: black; /* Match the background for aesthetics */
 }
 </style>

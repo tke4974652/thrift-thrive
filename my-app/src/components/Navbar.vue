@@ -1,21 +1,36 @@
 <template>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/home">Thrift & Thrive</a>
+        <a class="navbar-brand fw-bold fs-2" href="/home">ThriftThrive</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div class="navbar-nav me-auto">
-            <a class="nav-link" @click.prevent="select('Marketplace')">Marketplace</a>
-            <a class="nav-link" @click.prevent="select('Thrift Stores')">Thrift Stores</a>
-            <a class="nav-link" @click.prevent="select('Thrift Events')">Thrift Events</a>
-            <a class="nav-link" @click.prevent="select('Fashion Tips')">Fashion Tips</a>
-          </div>
-          <div class="navbar-nav">
-            <a class="nav-link" href="#">Chat</a>
-            <a class="nav-link" href="#" @click.prevent="handleLogout">Log out</a>
-          </div>
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" @click.prevent="select('Marketplace')">
+                    <i class="bi bi-shop"></i> Marketplace
+                </a>
+                <a class="nav-link" @click.prevent="select('Thrift Stores')">
+                    <i class="bi bi-bag"></i> Thrift Stores
+                </a>
+                <a class="nav-link" @click.prevent="select('Thrift Events')">
+                    <i class="bi bi-calendar"></i> Thrift Events
+                </a>
+                <a class="nav-link" @click.prevent="select('Fashion Blog')">
+                    <i class="bi bi-pencil"></i> Fashion Blog
+                </a>
+            </div>
+            <div class="navbar-nav">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-cart"></i> Cart
+                </a>
+                <a class="nav-link" href="#">
+                    <i class="bi bi-chat"></i> Chat
+                </a>
+                <a class="nav-link" href="#" @click.prevent="handleLogout">
+                    <i class="bi bi-box-arrow-right"></i> Log out
+                </a>
+            </div>
         </div>
       </div>
     </nav>
