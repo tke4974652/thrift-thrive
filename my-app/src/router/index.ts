@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../components/Login.vue'
 import Home from '../views/Homepage.vue'
+import Marketplace from '../components/Marketplace.vue'
 import { app } from '../lib/firebaseConfig'
 
 const router = createRouter({
@@ -20,10 +21,16 @@ const router = createRouter({
       component: () => import('../components/Register.vue')
     },
     {
-    path: '/home',
-    name: 'home',
-    component: Home,
-    meta: { requiresAuth: true }, // This route requires authentication
+      path: '/home',
+      name: 'home',
+      component: Home,
+      meta: { requiresAuth: true }, // This route requires authentication
+    },
+    {
+      path: '/marketplace',
+      name: 'home',
+      component: Marketplace,
+      meta: { requiresAuth: true }, // This route requires authentication
     }
   ]
 })

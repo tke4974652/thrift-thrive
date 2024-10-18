@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
 import LandingPage from './views/LandingPage.vue'
 import { onMounted, ref } from 'vue'
 import { auth } from './lib/firebaseConfig' // Import the auth object from firebaseConfig

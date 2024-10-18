@@ -72,10 +72,6 @@ const handleLogin = async () => {
   }
 }
 
-const handleLogout = async () => {
-  await signOut(auth)
-  isLoggedIn.value = false // Reset login state
-}
 </script>
 
 <style>

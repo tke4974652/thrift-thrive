@@ -1,35 +1,47 @@
 <template>
     <div class="landing-page">
         <div v-if="isLoggedIn" class="col-12 home">
-        <Homepage />
+            <Homepage />
         </div>
-        <div v-else-if="!isLoggedIn" class="intro">
-        <HelloWorld />
+        <div v-else class="intro">
+            <HelloWorld />
         </div>
     </div>
 </template>
-  
+
 <script lang="ts" setup>
-    import HelloWorld from '../components/HelloWorld.vue'
-    import { ref, onMounted } from 'vue'
-    import { auth } from '../lib/firebaseConfig'
-    import { onAuthStateChanged } from 'firebase/auth'
-    import Homepage from '@/views/Homepage.vue';
+import HelloWorld from '../components/HelloWorld.vue';
+import { ref, onMounted } from 'vue';
+import { auth } from '../lib/firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
+import Homepage from '@/views/Homepage.vue';
 
-    const isLoggedIn = ref(false)
+const isLoggedIn = ref(false);
 
-    // Check authentication status on component mount
-    onMounted(() => {
+// Load the logged-in status from local storage
+const loadLoginStatus = () => {
+    const storedStatus = localStorage.getItem('isLoggedIn');
+    isLoggedIn.value = storedStatus === 'true';
+};
+
+// Save the logged-in status to local storage
+const saveLoginStatus = (status: boolean) => {
+    localStorage.setItem('isLoggedIn', String(status));
+};
+
+// Check authentication status on component mount
+onMounted(() => {
+    loadLoginStatus(); // Load status from local storage
     onAuthStateChanged(auth, (user) => {
-        isLoggedIn.value = !!user // Set to true if user is logged in
+        const loggedIn = !!user;
+        isLoggedIn.value = loggedIn; // Update the reactive variable
+        saveLoginStatus(loggedIn); // Save to local storage
     });
-    });
-
+});
 </script>
-  
-  <style scoped>
-  .landing-page {
-    /* display: flex; */
+
+<style scoped>
+.landing-page {
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -39,13 +51,8 @@
     padding: 0; /* Remove default padding */
     background-color: #000000; /* Optional background color */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
-  }
-  /* .intro{
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    height: 100vh;
-  } */
-  </style>
+}
+</style>
+
   
   
