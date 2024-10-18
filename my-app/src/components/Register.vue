@@ -1,4 +1,5 @@
 <template>
+  <div>
     <h1 class="header">Register</h1>
     <p class="description">Create a new account!</p>
     <form class="row flex-center flex" @submit.prevent="handleRegister">
@@ -32,13 +33,17 @@
         </div>
       </div>
     </form>
+  </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { ref } from 'vue'
-import { auth } from '../lib/firebaseConfig'
+import { auth, db } from '../lib/firebaseConfig' // Ensure you have the Firestore db imported
 import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { doc, setDoc } from 'firebase/firestore'
+import { useRouter } from 'vue-router' // Import useRouter
 
+const router = useRouter()
 const loading = ref(false)
 const email = ref('')
 const password = ref('')
@@ -48,16 +53,32 @@ const handleRegister = async () => {
   try {
     loading.value = true
     const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
-    console.log(userCredential.user)
+    const user = userCredential.user
+
+    // Create a document in Firestore for the new user
+    const userData = {
+      email: user.email,
+      username: '', // Get the username from the input
+      photoURL: '', // You can leave this empty or set a default
+    }
     alert("Registration is successful!");
+    router.push('/home');
+    await setDoc(doc(db, 'users', user.uid), userData) // Assuming 'users' is your collection name
+ // Redirect to home
     email.value = ''
     password.value = ''
+
   } catch (error) {
-    errorMessage.value = error.message;
+    if (error instanceof Error) {
+      statusMessage.value = error.message; // Set error message to display
+    } else {
+      statusMessage.value = 'An unknown error occurred.'; // Handle unknown errors
+    }
   } finally {
     loading.value = false
   }
 }
+
 </script>
 
 <style>
@@ -84,5 +105,4 @@ const handleRegister = async () => {
 h1, p {
   color: white;
 }
-
 </style>

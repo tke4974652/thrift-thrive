@@ -19,7 +19,6 @@
 import { ref, onMounted } from 'vue'
 import { auth } from '../lib/firebaseConfig'
 import { onAuthStateChanged } from 'firebase/auth'
-import Homepage from '@/views/Homepage.vue';
 
 const isLoggedIn = ref(false)
 
@@ -33,7 +32,7 @@ onMounted(() => {
 
 <style scoped>
 .greetings {
-  text-align: center; /* Center text for smaller screens */
+  text-align: center; /* Center text */
 }
 
 h1 {
@@ -47,12 +46,13 @@ h1 {
 h3 {
   font-size: 1.2rem;
   text-align: center;
+  color: lightgray;
 }
 
 nav {
   margin-top: 2rem;
   font-size: 1rem; /* Uniform font size */
-  text-align: center; /* Center text for smaller screens */
+  text-align: center; /* Center text */
 }
 
 nav a {
@@ -72,11 +72,18 @@ nav a.router-link-exact-active {
 nav a.router-link-exact-active:hover {
   background-color: transparent;
 }
-.row{
+
+.row {
   display: flex; 
   align-items: center; 
   justify-content: center; 
-  height: 100vh;
-  margin: 0px;
+  height: 100vh; /* Full viewport height */
+  margin: 0; /* Remove default margin */
+}
+
+@media (max-width: 768px) {
+  .greetings {
+    flex: 1; /* Allow the greetings to take up space on smaller screens */
+  }
 }
 </style>

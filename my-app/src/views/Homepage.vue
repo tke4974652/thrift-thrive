@@ -9,22 +9,13 @@
       </section>
 
     </div>
-
-    <div class="home" v-if="!showMarketplace">
-      <section class="content">
-        <SuggestionPanel />
-      </section>
-      <section class="content">
-        <DisplayItem />
-      </section>
+    <div class="view">
+      <RouterView />
     </div>
 
-    <div class="marketplace" v-if="showMarketplace">
-      <section class="content">
-        <MarketPlace />
-      </section>
-    </div>
-
+    <!-- <div v-if='showProfile'>
+      <Profile />
+    </div> -->
     <!-- Floating FashionBot Button -->
     <div class="floating-bot" @click="toggleFashionBot">
       <FashionBot /> <!-- You can use an emoji or an icon here -->
@@ -37,13 +28,10 @@
 import { ref } from "vue";
 import Navbar from "../components/Navbar.vue";
 import SearchBar from '../components/SearchBar.vue';
-import DisplayItem from '../components/DisplayItem.vue';
-import SuggestionPanel from '../components/SuggestionPanel.vue';
-import MarketPlace from '../components/Marketplace.vue';
 import FashionBot from '../components/FashionBot.vue';
 
 const searchTerm = ref('');
-const showMarketplace = ref(false);
+const showProfile = ref(false);
 const isFashionBotVisible = ref(false); // State for FashionBot visibility
 
 function handleSearch(query: string) {
@@ -52,7 +40,7 @@ function handleSearch(query: string) {
 
 // Function to handle navbar selection
 function handleSelect(selected: string) {
-  showMarketplace.value = selected === 'Marketplace';
+  showProfile.value = !showProfile.value;
 }
 
 // Function to toggle FashionBot visibility
@@ -72,14 +60,8 @@ function toggleFashionBot() {
   background-color: black;
   color: white; /* Updated for visibility */
 }
-
-.home, .marketplace{
+.view{
   padding: 180px 50px 50px 50px; /* Add padding to avoid overlap with fixed navbar */
-}
-.content {
-  padding: 20px;
-  text-align: center;
-  color: white;
 }
 .constant {
   position: fixed;

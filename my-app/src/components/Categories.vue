@@ -26,5 +26,10 @@ const categories = ['shoes', 'accessories', 'belt', 't-shirt', 'jeans', 'outerwe
     border: none;
     margin: auto 10px;
 }
+.content {
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
 </style>
 

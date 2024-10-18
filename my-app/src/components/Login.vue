@@ -25,12 +25,20 @@
           </div>
           <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
           <div>
-            <input
+            <button
+              v-if="!loading && !isLoggedIn"
               type="submit"
               class="buttonBlock"
-              :value="loading ? 'Loading' : 'Sign In'"
-              :disabled="loading"
-            />
+            >
+              Sign In
+            </button>
+            <router-link
+              v-else-if="isLoggedIn"
+              class="buttonBlock"
+              :to="{ name: 'home' }"
+            >
+              Go to Home
+            </router-link>
           </div>
         </div>
       </form>
@@ -41,7 +49,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { auth } from '../lib/firebaseConfig'
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth'
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 
 const loading = ref(false)
@@ -63,6 +71,7 @@ const handleLogin = async () => {
     errorMessage.value = '' // Clear previous error messages
     await signInWithEmailAndPassword(auth, email.value, password.value)
     isLoggedIn.value = true // Set login state to true
+    router.push({ name: 'home' }); // Redirect to home page after login
   } catch (error) {
     if (error instanceof Error) {
       errorMessage.value = error.message // Display error message
@@ -71,7 +80,6 @@ const handleLogin = async () => {
     loading.value = false
   }
 }
-
 </script>
 
 <style>
