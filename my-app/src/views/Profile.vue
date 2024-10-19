@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="card" style="width: 18rem;">
+    <div class="card col-3" style="width: 18rem;">
     <div class="card-body">
       <h4 class="card-title">Your Profile</h4>
       <div v-if="photoURL" class="profile-photo">
@@ -16,8 +16,10 @@
       </button>
     </div>
     </div>
+    <div class="col-9">
+      <Listing></Listing>
+    </div>
   </div>
-
   <!-- Modal -->
   <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"> <!-- Ensure centered class is here -->
@@ -54,7 +56,7 @@ import { ref, onMounted } from 'vue';
 import { auth, db, storage } from '../lib/firebaseConfig'; // Add storage import
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-
+import Listing from '../components/Listing.vue';
 
 const userEmail = ref('');
 const name = ref('');

@@ -13,7 +13,7 @@
         <div class="fashion-bot">
           <div class="messages" v-for="(message, index) in messages" :key="index">
             <div :class="{'bot-message': message.from === 'bot', 'user-message': message.from === 'user'}">
-              <p>{{ message.text }}</p>
+              <p style="color:black;">{{ message.text }}</p>
             </div>
           </div>
         </div>
@@ -49,24 +49,33 @@ const saveMessages = () => {
 // Send message function
 const sendMessage = async () => {
   if (userInput.value.trim() === '') return;
+
   const userMessage = { from: 'user', text: userInput.value };
   messages.value.push(userMessage);
   saveMessages(); // Save to localStorage
   userInput.value = "";
-  
-  const prompt = "You are a fashion bot who gives good suggestions for outfits. Users may upload photo of clothing pieces and you should suggest clothing pieces that go well with them, taking into account the colour, texture, and the type. However, it is not compulsory for them to upload a photo. If the user has no idea what to wear, just give any suggestion that you think will be nice. End the conversation once they say 'thank you'.";
-  
-  // Send message to OpenAI
+
+  // Create prompt by combining previous messages
+  const promptMessages = messages.value.map(message => ({
+    role: message.from === 'user' ? 'user' : 'assistant',
+    content: message.text
+  }));
+
+  // Send message to OpenAI with improved instructions
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o', // Ensure the model name is correct
-    messages: [{ role: 'system', content: prompt }, { role: 'user', content: userInput.value }]
+    model: 'gpt-4',
+    messages: [
+      {
+        role: 'system',
+        content: "You are a fashion bot. Respond directly to the user's input without asking them to repeat themselves. If the user provides details about their clothing choice, use that information to give tailored suggestions."
+      },
+      ...promptMessages
+    ]
   });
-  
+
   const botMessage = { from: 'bot', text: response.choices[0].message.content };
   messages.value.push(botMessage);
   saveMessages(); // Save to localStorage
-  
-  userInput.value = ''; // Clear input field
 };
 
 onMounted(loadMessages);
@@ -89,6 +98,8 @@ onMounted(loadMessages);
   border-radius: 5px;
   padding: 10px;
   margin: 5px 0;
+  max-width: 80%;
+  border: 1px solid #ccc;
 }
 
 .user-message {
@@ -96,7 +107,10 @@ onMounted(loadMessages);
   color: white;
   border-radius: 5px;
   padding: 10px;
-  margin: 5px 0;
+  margin: 5px 0px;
+  margin-left: auto;
+  max-width: 80%;
+  border: 1px solid #ccc;
 }
 
 .input-group {
@@ -112,7 +126,7 @@ input {
   flex-grow: 1; /* Allow input to grow */
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
 button {
@@ -152,15 +166,21 @@ button:hover {
 }
 
 .offcanvas {
-  /* width: 300px !important; 
-  height: 400px !important; */
-  background-color: lightgrey;
+  background-color: white;
   border-radius: 10px;
   border: 1px solid black;
 }
-.offcanvas-header{
+
+.offcanvas-header {
   background-color: #4CAF50;
   border-bottom: 1px solid black;
   border-radius: 5px;
 }
+
+.offcanvas-body{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: white;
+}
 </style>
+
