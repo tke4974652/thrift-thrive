@@ -53,6 +53,7 @@ function toggleFashionBot() {
 .homepage {
   background-color: black;
   position: relative; /* Set to relative for absolute positioning of floating bot */
+  width: 100%
 }
 .hero {
   text-align: center;
@@ -61,7 +62,8 @@ function toggleFashionBot() {
   color: white; /* Updated for visibility */
 }
 .view{
-  padding: 180px 50px 50px 50px; /* Add padding to avoid overlap with fixed navbar */
+  padding: 200px 50px 50px 50px;
+  width: 100%;
 }
 .constant {
   position: fixed;
@@ -70,5 +72,6 @@ function toggleFashionBot() {
   right: 0; /* Stretches across the viewport */
   z-index: 1000; /* Ensure it's above other content */
   background-color: black; /* Match the background for aesthetics */
+  width: 100%;
 }
 </style>

@@ -146,10 +146,12 @@ button:hover {
 /* Floating bot styles */
 .floating-bot {
   position: fixed; /* Fixed position to float over the content */
-  bottom: 20px; /* Distance from the bottom */
-  right: 20px; /* Distance from the right */
-  width: 60px; /* Width of the button */
-  height: 60px; /* Height of the button */
+  bottom: 5%; /* Distance from the bottom as a percentage of the viewport height */
+  right: 5%; /* Distance from the right as a percentage of the viewport width */
+  width: 30%; /* Width relative to viewport width */
+  max-width: 60px; /* Maximum width to ensure it doesn't get too large */
+  height: auto; /* Auto height to maintain aspect ratio */
+  aspect-ratio: 1; /* Ensure it stays circular */
   background-color: #4CAF50; /* Change as needed */
   color: white;
   border-radius: 50%; /* Makes it circular */

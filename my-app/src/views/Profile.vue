@@ -1,28 +1,28 @@
 <template>
   <div class="row">
-    <div class="card col-3" style="width: 18rem;">
-    <div class="card-body">
-      <h4 class="card-title">Your Profile</h4>
-      <div v-if="photoURL" class="profile-photo">
-        <img :src="photoURL" alt="Profile Photo" />
+    <div class="card col-lg-3 col-12 profile mx-auto" style="width: 18rem;">
+      <div class="card-body">
+        <h4 class="card-title">Your Profile</h4>
+        <div v-if="photoURL" class="profile-photo">
+          <img :src="photoURL" alt="Profile Photo" />
+        </div>
+        <div v-else class="profile-photo">
+          <img src="../assets/user.jpeg" alt="Profile Photo" />
+        </div>
+        <p class="card-text" style="color: black"><strong>Email:</strong> {{ userEmail }}</p>
+        <p class="card-text" style="color: black"><strong>Name:</strong> {{ name }}</p>
+        <button style="width: 80%; float: inline-end;" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+          <i class="bi bi-pencil-square"> Edit Profile </i>
+        </button>
       </div>
-      <div v-else class="profile-photo">
-        <img src="../assets/user.jpeg" alt="Profile Photo" />
-      </div>
-      <p class="card-text" style="color: black"><strong>Email:</strong> {{ userEmail }}</p>
-      <p class="card-text" style="color: black"><strong>Name:</strong> {{ name }}</p>
-      <button style="width: 150px; float: inline-end;" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-        <i class="bi bi-pencil-square"> Edit Profile </i>
-      </button>
     </div>
-    </div>
-    <div class="col-9">
+    <div class="col-lg-9 col-12 custom-col mx-auto">
       <Listing></Listing>
     </div>
   </div>
   <!-- Modal -->
   <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"> <!-- Ensure centered class is here -->
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="staticBackdropLabel">
@@ -52,8 +52,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { auth, db, storage } from '../lib/firebaseConfig'; // Add storage import
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { auth, db, storage } from '../lib/firebaseConfig'; 
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Listing from '../components/Listing.vue';
@@ -62,70 +62,74 @@ const userEmail = ref('');
 const name = ref('');
 const photoURL = ref('');
 const loading = ref(true);
-const currentUser: User | null = auth.currentUser;
 
-if (currentUser) {
-  userEmail.value = currentUser.email || '';
-}
+// Auth state observer
+const unsubscribe = auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    await loadFromLocalStorage(user.uid);
+    await fetchUserData(user.uid);
+  } else {
+    resetUserData();
+  }
+});
 
-const loadFromLocalStorage = () => {
-  const cachedData = localStorage.getItem(`user_${currentUser.uid}`);
+const loadFromLocalStorage = async (uid: string) => {
+  const cachedData = localStorage.getItem(`user_${uid}`);
   if (cachedData) {
     const userData = JSON.parse(cachedData);
-    userEmail.value = userData.email;
-    name.value = userData.name;
-    photoURL.value = userData.photoURL;
+    userEmail.value = userData.email || '';
+    name.value = userData.name || '';
+    photoURL.value = userData.photoURL || '';
   }
 };
 
-const fetchUserData = async () => {
-  const userDoc = doc(db, 'users', currentUser.uid);
+const fetchUserData = async (uid: string) => {
+  const userDoc = doc(db, 'users', uid);
   const userSnapshot = await getDoc(userDoc);
-  loading.value = false;
 
   if (userSnapshot.exists()) {
     const userData = userSnapshot.data();
     userEmail.value = userData.email || '';
     name.value = userData.username || '';
     photoURL.value = userData.photoURL || '';
-    
-    localStorage.setItem(`user_${currentUser.uid}`, JSON.stringify({
+
+    // Update local storage
+    localStorage.setItem(`user_${uid}`, JSON.stringify({
       email: userEmail.value,
-      name: userData.username,
+      name: name.value,
       photoURL: photoURL.value,
     }));
   }
 };
 
-onMounted(async () => {
-  if (currentUser) {
-    loadFromLocalStorage();
-    await fetchUserData();
-  } else {
-    loading.value = false;
-  }
+// Reset user data when signed out
+const resetUserData = () => {
+  userEmail.value = '';
+  name.value = '';
+  photoURL.value = '';
+};
+
+onBeforeUnmount(() => {
+  unsubscribe(); // Clean up the observer
 });
 
 const handlePhotoUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
     const file = target.files[0];
-    const storagePath = `profile_photos/${currentUser.uid}`; // Unique path for each user
+    const storagePath = `profile_photos/${auth.currentUser?.uid}`; // Use auth.currentUser here
     const photoRef = storageRef(storage, storagePath);
 
-    // Upload the image to Firebase Storage
     await uploadBytes(photoRef, file);
-    
-    // Get the download URL
     const downloadURL = await getDownloadURL(photoRef);
-    photoURL.value = downloadURL; // Set the photo URL
+    photoURL.value = downloadURL; 
     
-    // Save the URL in Firestore and local storage
     await updateUserProfile(downloadURL);
   }
 };
 
 const updateUserProfile = async (downloadURL: string) => {
+  const currentUser = auth.currentUser;
   if (currentUser) {
     const userDoc = doc(db, 'users', currentUser.uid);
     const userData = {
@@ -134,7 +138,6 @@ const updateUserProfile = async (downloadURL: string) => {
     };
     await setDoc(userDoc, userData, { merge: true });
 
-    // Update localStorage
     localStorage.setItem(`user_${currentUser.uid}`, JSON.stringify({
       email: userEmail.value,
       name: name.value,
@@ -142,12 +145,11 @@ const updateUserProfile = async (downloadURL: string) => {
     }));
 
     alert('Profile updated successfully!');
-  } else {
-    alert('User not logged in.');
   }
 };
 
 const updateProfile = async () => {
+  const currentUser = auth.currentUser;
   if (currentUser) {
     const userDoc = doc(db, 'users', currentUser.uid);
     const userData = {
@@ -156,7 +158,6 @@ const updateProfile = async () => {
     };
     await setDoc(userDoc, userData, { merge: true });
 
-    // Update localStorage
     localStorage.setItem(`user_${currentUser.uid}`, JSON.stringify({
       email: userEmail.value,
       name: name.value,
@@ -164,8 +165,6 @@ const updateProfile = async () => {
     }));
 
     alert('Profile updated successfully!');
-  } else {
-    alert('User not logged in.');
   }
 };
 </script>
@@ -196,19 +195,9 @@ input[type="file"] {
   border-radius: 4px;
 }
 
-/* button {
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-} */
-
-/* button:hover {
-  background-color: #0056b3;
-} */
+.profile {
+  height: 470px;
+}
 
 .profile-photo {
   margin-top: 15px;
@@ -221,5 +210,25 @@ input[type="file"] {
   height: auto;
   border-radius: 50%;
 }
+
+.col-9{
+  padding-right: 0px;
+}
+.card {
+  margin-bottom: 20px;
+  width: 400px;
+}
+
+.profile-photo img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 50%;
+}
+
+@media (max-width: 1228px) {
+  .custom-col {
+    flex: 0 0 100%; /* Make it full width */
+    max-width: 100%; /* Prevent it from exceeding full width */
+  }
+}
 </style>
-  

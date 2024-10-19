@@ -1,5 +1,7 @@
 <template>
         <h2>Trending Kicks</h2>
+        <Loading :isLoading="isLoading" message="Fetching your products..." />
+        <div v-if="!isLoading">
         <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
             <div class="carousel-item" v-for="(item, index) in groupedProducts" :key="index" :class="{ active: index === 0 }">
@@ -26,20 +28,24 @@
               <span class="visually-hidden">Next</span>
           </button>
         </div>
+        </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { db } from "@/lib/firebaseConfig"; // Adjust the path as necessary
 import { collection, getDocs } from "firebase/firestore";
+import Loading from "@/components/Loading.vue"; // Adjust the path as necessary
 
 const products = ref<any[]>([]); // Adjust the type as needed
 const groupSize = ref(0); // Initialize reactive groupSize
+const isLoading = ref(true);
 
 const fetchProducts = async () => {
   // Check local storage first
   const cachedProducts = localStorage.getItem('products');
   if (cachedProducts) {
+    isLoading.value = false;
     products.value = JSON.parse(cachedProducts);
     return;
   }
@@ -54,6 +60,7 @@ const fetchProducts = async () => {
 
     // Cache products in local storage
     localStorage.setItem('products', JSON.stringify(fetchedProducts));
+    isLoading.value = false;
   } catch (error) {
     console.error('Error fetching products:', error);
   }
@@ -97,7 +104,6 @@ const groupedProducts = computed(() => {
     for (let i = 0; i < products.value.length; i += groupSize.value) {
         groups.push(products.value.slice(i, i + groupSize.value));
     }
-    
     return groups;
 });
 
