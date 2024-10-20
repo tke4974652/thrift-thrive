@@ -4,7 +4,7 @@
       <h1 class="green">ThriftThrive</h1>
       <h3>A new way to shop sustainably</h3>
       <nav>
-        <RouterLink to="/">Login</RouterLink>
+        <RouterLink to="/login">Login</RouterLink>
         <RouterLink to="/register">Register</RouterLink>
       </nav>
     </div>
@@ -16,18 +16,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { auth } from '../lib/firebaseConfig'
-import { onAuthStateChanged } from 'firebase/auth'
+import { ref } from 'vue'
 
-const isLoggedIn = ref(false)
+const isClicked = ref(false)
 
-// Check authentication status on component mount
-onMounted(() => {
-  onAuthStateChanged(auth, (user) => {
-    isLoggedIn.value = !!user // Set to true if user is logged in
-  });
-});
+function moveGreeting() {
+  isClicked.value = true;
+}
+
 </script>
 
 <style scoped>
@@ -38,21 +34,16 @@ onMounted(() => {
 h1 {
   font-weight: 500;
   font-size: 2.6rem;
-  position: relative;
-  top: -10px;
-  text-align: center;
 }
 
 h3 {
   font-size: 1.2rem;
-  text-align: center;
   color: lightgray;
 }
 
 nav {
   margin-top: 2rem;
   font-size: 1rem; /* Uniform font size */
-  text-align: center; /* Center text */
 }
 
 nav a {
@@ -64,15 +55,13 @@ nav a {
 nav a:first-of-type {
   border-left: none; /* Remove left border for the first link */
 }
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
+nav a.router-link-active {
+  color: var(--color-text) !important; /* Using !important as a last resort */
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+nav a.router-link-active:hover {
+  background-color: transparent !important; /* Ensure hover state is also applied */
 }
-
 .row {
   display: flex; 
   align-items: center; 

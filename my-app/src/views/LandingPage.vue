@@ -4,13 +4,13 @@
             <Homepage />
         </div>
         <div v-else class="intro">
-            <HelloWorld />
+            <LoginPage />
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import HelloWorld from '../components/HelloWorld.vue';
+import LoginPage from './LoginPage.vue';
 import { ref, onMounted } from 'vue';
 import { auth } from '../lib/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
