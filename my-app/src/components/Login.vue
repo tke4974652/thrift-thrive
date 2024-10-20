@@ -29,8 +29,8 @@
               v-if="!loading && !isLoggedIn"
               type="submit"
               class="buttonBlock"
+              value="Sign In"
             >
-              Sign In
             </button>
             <router-link
               v-else-if="isLoggedIn"
