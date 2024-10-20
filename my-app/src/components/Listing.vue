@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid">
-      <h3>Your Listings</h3>
+      <h3 style="padding-bottom: 10px">Your Listings</h3>
       <Loading :isLoading="isLoading" message="Fetching your products..." />
       <div v-if="!isLoading">
         <div class="row">
