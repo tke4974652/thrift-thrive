@@ -8,21 +8,27 @@
         </select>
       </div>
       <div v-else>
-        <button v-for="cat in categories" :key="cat" class="categories">{{ cat }}</button>
+        <button v-for="cat in categories" :key="cat" class="categories" @click="handleChoice(cat)">{{ cat }}</button>
       </div>
     </div>
   </template>
   
   <script lang="ts" setup>
-  import { ref, computed } from 'vue';
+  import { ref, defineEmits } from 'vue';
   
-  const categories = ['shoes', 'accessories', 'belt', 't-shirt', 'jeans', 'outerwear'];
+  const emit = defineEmits(['categorySelected']);
+  const categories = ['Shoes', 'Accessories', 'Belt', 'T-shirt', 'Jeans', 'Outerwear'];
   const isDropdown = ref(false);
   
   // Function to handle category change
   const handleCategoryChange = (event: Event) => {
     const selectedCategory = (event.target as HTMLSelectElement).value;
+    emit('categorySelected', selectedCategory);
+  };
+  const handleChoice = (category: string) => {
+    const selectedCategory = category;
     console.log('Selected category:', selectedCategory);
+    emit('categorySelected', selectedCategory);
   };
   
   // Reactive property to check screen width
@@ -62,5 +68,3 @@
     border-radius: 5px;
   }
   </style>
-  
-

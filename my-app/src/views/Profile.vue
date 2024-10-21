@@ -61,7 +61,6 @@ import Listing from '../components/Listing.vue';
 const userEmail = ref('');
 const name = ref('');
 const photoURL = ref('');
-const loading = ref(true);
 
 // Auth state observer
 const unsubscribe = auth.onAuthStateChanged(async (user) => {
