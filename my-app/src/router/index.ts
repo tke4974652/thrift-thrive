@@ -6,6 +6,7 @@ import Home from '../views/Home.vue';
 import Marketplace from '../views/Marketplace.vue';
 import Profile from '../views/Profile.vue';
 import Sell from '../views/Sell.vue';
+import ThriftMap from '../views/ThriftMap.vue'
 
 // Function to check if user is logged in
 const isLoggedIn = () => {
@@ -45,13 +46,7 @@ const router = createRouter({
     {
       path: '/thrift-stores',
       name: 'thrift-stores',
-      component: Marketplace,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/thrift-events',
-      name: 'thrift-events',
-      component: Marketplace,
+      component: ThriftMap,
       meta: { requiresAuth: true },
     },
     {

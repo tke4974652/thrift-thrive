@@ -13,9 +13,6 @@
             <router-link class="nav-link" to="/thrift-stores">
               <i class="bi bi-bag"></i> Thrift Stores
             </router-link>
-            <router-link class="nav-link" to="/thrift-events">
-              <i class="bi bi-calendar"></i> Thrift Events
-            </router-link>
             <router-link class="nav-link" to="/fashion-blog">
               <i class="bi bi-pencil"></i> Fashion Blog
             </router-link>

@@ -1,10 +1,23 @@
 <template>
   <div>
-    <button class="btn btn-primary floating-bot" type="button" data-bs-toggle="offcanvas" data-bs-target="#fashionBotOffcanvas" aria-controls="fashionBotOffcanvas">
+    <button
+      class="btn btn-primary floating-bot"
+      type="button"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#fashionBotOffcanvas"
+      aria-controls="fashionBotOffcanvas"
+      :class="{ bouncing: isBouncing }" 
+    >
       🤖
     </button>
 
-    <div class="offcanvas offcanvas-start" data-bs-backdrop="false" tabindex="-1" id="fashionBotOffcanvas" aria-labelledby="fashionBotOffcanvasLabel">
+    <div
+      class="offcanvas offcanvas-start"
+      data-bs-backdrop="false"
+      tabindex="-1"
+      id="fashionBotOffcanvas"
+      aria-labelledby="fashionBotOffcanvasLabel"
+    >
       <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="fashionBotOffcanvasLabel">FashionBot</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -19,8 +32,8 @@
         </div>
       </div>
       <div class="input-group">
-          <input v-model="userInput" @keydown.enter="sendMessage" placeholder="Type your message..." />
-          <button @click="sendMessage">Send</button>
+        <input v-model="userInput" @keydown.enter="sendMessage" placeholder="Type your message..." />
+        <button @click="sendMessage">Send</button>
       </div>
     </div>
   </div>
@@ -32,6 +45,7 @@ import { openai } from '../lib/openAi'; // Ensure you have the OpenAI package
 
 const userInput = ref('');
 const messages = ref<any[]>([]); // Adjust the type as needed
+const isBouncing = ref(false); // State to control the bouncing effect
 
 // Load messages from localStorage
 const loadMessages = () => {
@@ -78,7 +92,18 @@ const sendMessage = async () => {
   saveMessages(); // Save to localStorage
 };
 
-onMounted(loadMessages);
+const startBouncing = () => {
+  isBouncing.value = true;
+  setTimeout(() => {
+    isBouncing.value = false;
+  }, 1000); // Duration of the animation
+};
+
+onMounted(() => {
+  loadMessages();
+  // Start bouncing every 10 seconds
+  setInterval(startBouncing, 5000);
+});
 </script>
 
 <style scoped>
@@ -179,10 +204,26 @@ button:hover {
   border-radius: 5px;
 }
 
-.offcanvas-body{
+.offcanvas-body {
   margin-top: 10px;
   margin-bottom: 10px;
   background-color: white;
 }
-</style>
 
+/* Bounce animation styles */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-15px); /* Change the height of the bounce */
+  }
+  60% {
+    transform: translateY(-10px); /* Change the height of the bounce */
+  }
+}
+
+.bouncing {
+  animation: bounce 1s infinite; /* Animation lasts 1 second and repeats infinitely */
+}
+</style>
