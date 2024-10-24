@@ -24,10 +24,14 @@ onMounted(async () => {
 });
 </script>
 
-
 <template>
-    <div>
+    <div class="masterpage">
       <LandingPage/>
     </div>
 </template>
 
+<style scoped>
+.masterpage{
+  background-color: black;
+}
+</style>

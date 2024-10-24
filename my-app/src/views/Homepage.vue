@@ -1,22 +1,20 @@
 <template>
   <div class="homepage">
-    <div class="constant">
+    <div class="constant" @mouseenter="showSearchBar" @mouseleave="hideSearchBar">
       <Navbar @select="handleSelect" />
 
       <section class="hero">
-        <SearchBar @search="handleSearch" />
+        <div ref="searchBarContainer" class="search-bar-container">
+          <SearchBar @search="handleSearch" />
+        </div>
         <!-- <p>Searching for: {{ searchTerm }}</p> -->
       </section>
 
     </div>
-    <div class="view">
+    <div :class="['view', isHome ? 'home-view' : 'default-view']">
       <RouterView />
     </div>
 
-    <!-- <div v-if='showProfile'>
-      <Profile />
-    </div> -->
-    <!-- Floating FashionBot Button -->
     <div class="floating-bot" @click="toggleFashionBot">
       <FashionBot /> <!-- You can use an emoji or an icon here -->
     </div>
@@ -25,7 +23,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { useRoute } from 'vue-router';
+import gsap from "gsap";
 import Navbar from "../components/Navbar.vue";
 import SearchBar from '../components/SearchBar.vue';
 import FashionBot from '../components/FashionBot.vue';
@@ -33,6 +33,13 @@ import FashionBot from '../components/FashionBot.vue';
 const searchTerm = ref('');
 const showProfile = ref(false);
 const isFashionBotVisible = ref(false); // State for FashionBot visibility
+const searchBarContainer = ref<HTMLElement | null>(null);
+
+// Get the current route
+const route = useRoute();
+
+// Check if the current route is '/home'
+const isHome = computed(() => route.path === '/home');
 
 function handleSearch(query: string) {
   searchTerm.value = query;
@@ -47,31 +54,86 @@ function handleSelect(selected: string) {
 function toggleFashionBot() {
   isFashionBotVisible.value = !isFashionBotVisible.value;
 }
+
+// Function to show the search bar
+function showSearchBar() {
+  gsap.to(searchBarContainer.value, {
+    duration: 0.5,
+    y: 0,
+    ease: "power1.out",
+  });
+}
+
+// Function to hide the search bar
+function hideSearchBar() {
+  gsap.to(searchBarContainer.value, {
+    duration: 0.5,
+    y: "-100%",
+    ease: "power1.in",
+  });
+}
+
+onMounted(() => {
+  const tl_header = gsap.timeline({ease: "power1.easeInOut"});
+
+  tl_header.from(".constant", {
+    delay: 4.5,
+    duration: 1,
+    y: -80
+  });
+
+  // Hide the search bar initially by positioning it off-screen
+  gsap.set(searchBarContainer.value, { y: "-100%" });
+});
 </script>
 
 <style scoped>
 .homepage {
   background-color: black;
   position: relative; /* Set to relative for absolute positioning of floating bot */
-  width: 100%
+  width: 100%;
 }
+
 .hero {
   text-align: center;
-  padding: 20px 20px 10px 20px; /* Increased padding to account for fixed navbar */
-  background-color: black;
-  color: white; /* Updated for visibility */
+  background-color: white;
+  color: white;
 }
-.view{
-  padding: 200px 50px 50px 50px;
+
+.view {
   width: 100%;
 }
+
+/* Style for '/home' route */
+.home-view {
+  padding: 0px;
+}
+
+/* Style for other routes */
+.default-view {
+  padding: 130px 50px 50px 50px;
+}
+
 .constant {
   position: fixed;
-  top: 0; /* Fixes it to the top */
+  top: 0;
   left: 0;
-  right: 0; /* Stretches across the viewport */
-  z-index: 1000; /* Ensure it's above other content */
-  background-color: black; /* Match the background for aesthetics */
+  right: 0;
+  z-index: 1000;
+  background-color: black;
   width: 100%;
+}
+
+.search-bar-container {
+  position: absolute;
+  width: 100%;
+  top: 1; /* Will slide down from the top */
+  left: 0;
+  right: 0;
+  z-index: -1; /* Ensure it's above other content */
+}
+
+.constant:hover .search-bar-container {
+  z-index: 999;
 }
 </style>

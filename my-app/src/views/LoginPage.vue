@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="greetings col-lg-6 col-md-6 col-12">
+    <div ref="greetingRef" class="greetings col-lg-6 col-md-6 col-12">
       <h1 class="green">ThriftThrive</h1>
       <h3>A new way to shop sustainably</h3>
       <nav>
@@ -9,28 +9,63 @@
       </nav>
     </div>
     
-    <div class="col-lg-5 col-md-5 col-11">
+    <div ref="displayRef" class="col-lg-5 col-md-5 col-11">
       <RouterView />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import gsap from 'gsap'
 
-const isClicked = ref(false)
+const greetingRef = ref<HTMLElement | null>(null)
+const displayRef = ref<HTMLElement | null>(null)
 
-function moveGreeting() {
-  isClicked.value = true;
+// Animation function for greeting section
+async function animateGreeting() {
+  gsap.fromTo(greetingRef.value, 
+    { opacity: 0, y: -50 }, // Start state
+    { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" } // End state
+  );
 }
+
+// Animation function for display section
+async function animateDisplay() {
+  gsap.fromTo(displayRef.value, 
+    { opacity: 0, y: 50 }, // Start state
+    { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" } // End state
+  );
+}
+
+// Animate the text color of the brand (".green")
+async function animateBrand() {
+  gsap.to(".green", { 
+    duration: 2,
+    color: '#ffffff',
+    repeat: -1,
+    yoyo: true,
+    ease: "power1.in"
+  });
+}
+
+// Trigger animations on mount
+onMounted(() => {
+  animateGreeting();
+  animateDisplay();
+  animateBrand();
+});
 
 </script>
 
 <style scoped>
 .greetings {
-  text-align: center; /* Center text */
+  text-align: center;
+  opacity: 0; /* Initially hidden for animation */
 }
-
+.green{
+  color: hsla(160, 100%, 37%, 1)
+}
 h1 {
   font-weight: 500;
   font-size: 2.6rem;
@@ -43,7 +78,7 @@ h3 {
 
 nav {
   margin-top: 2rem;
-  font-size: 1rem; /* Uniform font size */
+  font-size: 1rem;
 }
 
 nav a {
@@ -53,26 +88,29 @@ nav a {
 }
 
 nav a:first-of-type {
-  border-left: none; /* Remove left border for the first link */
+  border-left: none;
 }
+
 nav a.router-link-active {
-  color: var(--color-text) !important; /* Using !important as a last resort */
+  color: var(--color-text) !important;
 }
 
 nav a.router-link-active:hover {
-  background-color: transparent !important; /* Ensure hover state is also applied */
+  background-color: transparent !important;
 }
+
 .row {
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  height: 100vh; /* Full viewport height */
-  margin: 0; /* Remove default margin */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
 }
 
 @media (max-width: 768px) {
   .greetings {
-    flex: 1; /* Allow the greetings to take up space on smaller screens */
+    flex: 1;
   }
 }
 </style>
+

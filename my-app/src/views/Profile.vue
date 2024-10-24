@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="card col-lg-3 col-12 profile mx-auto" style="width: 18rem;">
+    <div ref="profileRef" class="card col-lg-3 col-12 profile mx-auto" style="width: 18rem;">
       <div class="card-body">
         <h4 class="card-title">Your Profile</h4>
         <div v-if="photoURL" class="profile-photo">
@@ -16,7 +16,7 @@
         </button>
       </div>
     </div>
-    <div class="col-lg-9 col-12 custom-col mx-auto">
+    <div ref="customColRef" class="col-lg-9 col-12 custom-col mx-auto">
       <Listing></Listing>
     </div>
   </div>
@@ -52,6 +52,7 @@
 </template>
 
 <script setup lang="ts">
+import gsap from 'gsap'
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { auth, db, storage } from '../lib/firebaseConfig'; 
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -61,6 +62,9 @@ import Listing from '../components/Listing.vue';
 const userEmail = ref('');
 const name = ref('');
 const photoURL = ref('');
+
+const profileRef = ref<HTMLElement | null>(null);
+const customColRef = ref<HTMLElement | null>(null);
 
 // Auth state observer
 const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -166,6 +170,19 @@ const updateProfile = async () => {
     alert('Profile updated successfully!');
   }
 };
+
+onMounted(() => {
+  gsap.fromTo(profileRef.value, 
+    { x: '-100%', opacity: 0 }, 
+    { x: '0%', opacity: 1, duration: 1, ease: 'power2.out' }
+  );
+
+  gsap.fromTo(customColRef.value, 
+    { x: '100%', opacity: 0 }, 
+    { x: '0%', opacity: 1, duration: 1, ease: 'power2.out' }
+  );
+});
+
 </script>
 
 <style scoped>
