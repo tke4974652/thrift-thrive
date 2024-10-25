@@ -84,12 +84,18 @@ const router = createRouter({
 
 // Navigation guard for routes that require authentication
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !isLoggedIn()) {
+  const requiresAuth = to.meta.requiresAuth;
+  const loggedIn = isLoggedIn();
+
+  if (requiresAuth && !loggedIn) {
     next({ name: 'login' });
+  } else if ((to.name === 'login' || to.name === 'register') && loggedIn) {
+    next({ name: 'home' });
   } else {
     next();
   }
 });
+
 
 // Firebase authentication state listener to manage local storage
 auth.onAuthStateChanged(user => {
