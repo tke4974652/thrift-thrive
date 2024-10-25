@@ -130,7 +130,8 @@ onMounted(async () => {
 
 <style scoped>
 template {
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-family: "Montserrat", sans-serif;
+  font-weight: bold;
   overflow-x: hidden;
 }
 
