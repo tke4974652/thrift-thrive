@@ -52,9 +52,6 @@ const photoURL = ref('');
 const loading = ref(true);
 const currentUser: User | null = auth.currentUser;
 
-const men = ref<HTMLElement | null>(null)
-const women = ref<HTMLElement | null>(null)
-
 if (currentUser) {
   userEmail.value = currentUser.email || '';
 }
