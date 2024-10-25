@@ -79,6 +79,12 @@ const router = createRouter({
       component: Sell,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/item',
+      name: 'item',
+      component: Item,
+      meta: { requiresAuth: true },
+    },
   ]
 });
 
