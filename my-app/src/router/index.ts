@@ -6,7 +6,8 @@ import Home from '../views/Home.vue';
 import Marketplace from '../views/Marketplace.vue';
 import Profile from '../views/Profile.vue';
 import Sell from '../views/Sell.vue';
-import ThriftMap from '../views/ThriftMap.vue'
+import ThriftMap from '../views/ThriftMap.vue';
+import Item from '../views/Item.vue';
 
 // Function to check if user is logged in
 const isLoggedIn = () => {
