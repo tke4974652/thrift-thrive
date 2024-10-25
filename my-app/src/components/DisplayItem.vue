@@ -7,7 +7,7 @@
             <div class="carousel-item" v-for="(item, index) in groupedProducts" :key="index" :class="{ active: index === 0 }">
                 <div class="row justify-content-center">
                     <div v-for="product in item" :key="product.id" class="col-lg-3 col-md-4 col-sm-6">
-                        <div class="card mb-4" @click="clickMe(product.name)">
+                        <div class="card mb-4" @click="navigateToItem(product)">
                             <img :src="product.image" class="card-img-top" alt="Product Image">
                             <div class="card-body">
                                 <h5 class="card-title">{{ product.name }}</h5>
@@ -36,6 +36,11 @@ import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { db } from "@/lib/firebaseConfig"; // Adjust the path as necessary
 import { collection, getDocs } from "firebase/firestore";
 import Loading from "@/components/Loading.vue"; // Adjust the path as necessary
+import { useRouter } from 'vue-router'; // Import useRouter from Vue Router
+
+const router = useRouter(); // Initialize the router
+
+
 
 const products = ref<any[]>([]); // Adjust the type as needed
 const groupSize = ref(0); // Initialize reactive groupSize
@@ -107,9 +112,11 @@ const groupedProducts = computed(() => {
     return groups;
 });
 
-function clickMe(name: any) {
-  alert(name + " is chosen");
+// Function to navigate to Item.vue with the product details
+function navigateToItem(product: any) { 
+    router.push({ name: 'item', params: { id: product.id } }); 
 }
+
 
 // Fetch products on component mount
 onMounted(fetchProducts);
