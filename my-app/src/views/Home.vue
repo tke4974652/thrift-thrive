@@ -27,7 +27,6 @@
             <a href="/">Shop Now</a>
           </div>
         </div>
-
       </section>
       <section class="content">
           <SuggestionPanel />

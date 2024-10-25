@@ -101,6 +101,15 @@
   font-size: 1.5vw; /* Adjust as needed */
 }
 
+.card {
+  /* Other styles for .card */
+  transition: transform 0.2s; /* Optional: adds a smooth scaling effect */
+}
+
+.card:hover {
+  cursor: pointer; /* Changes cursor to a pointer when hovering */
+  transform: scale(1.05); /* Optional: scales up slightly on hover */
+}
 /* Optionally add media queries for specific screen sizes */
 @media (max-width: 768px) {
   .category-title {

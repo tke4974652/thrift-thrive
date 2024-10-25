@@ -78,7 +78,7 @@ onMounted(() => {
 
   tl_header.from(".constant", {
     delay: 4.5,
-    duration: 1,
+    duration: 0.75,
     y: -80
   });
 

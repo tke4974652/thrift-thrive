@@ -40,8 +40,6 @@ import { useRouter } from 'vue-router'; // Import useRouter from Vue Router
 
 const router = useRouter(); // Initialize the router
 
-
-
 const products = ref<any[]>([]); // Adjust the type as needed
 const groupSize = ref(0); // Initialize reactive groupSize
 const isLoading = ref(true);
@@ -128,7 +126,6 @@ onMounted(fetchProducts);
   height: 300px; /* Set a fixed height to maintain card size */
   object-fit: cover; /* Ensure the image covers the area without distortion */
 }
-
 .carousel-control-prev, .carousel-control-next {
   border-radius: 50%;
   border: 1px solid black;
@@ -137,9 +134,17 @@ onMounted(fetchProducts);
   top: 50%; /* Center vertically */
   transform: translateY(-50%);
 }
-
 #productCarousel {
   padding-top: 10px;
+}
+.card {
+  /* Other styles for .card */
+  transition: transform 0.2s; /* Optional: adds a smooth scaling effect */
+}
+
+.card:hover {
+  cursor: pointer; /* Changes cursor to a pointer when hovering */
+  transform: scale(1.05); /* Optional: scales up slightly on hover */
 }
 </style>
 
