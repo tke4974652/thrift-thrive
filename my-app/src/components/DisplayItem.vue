@@ -112,7 +112,7 @@ const groupedProducts = computed(() => {
 
 // Function to navigate to Item.vue with the product details
 function navigateToItem(product: any) { 
-    router.push({ name: 'item', params: { id: product.id } }); 
+    router.push({ name: 'item', params: { id: product.id} }); 
 }
 
 

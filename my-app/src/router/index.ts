@@ -8,6 +8,7 @@ import Profile from '../views/Profile.vue';
 import Sell from '../views/Sell.vue';
 import ThriftMap from '../views/ThriftMap.vue';
 import Item from '../views/Item.vue';
+import Chat from '../views/Chat.vue';
 
 // Function to check if user is logged in
 const isLoggedIn = () => {
@@ -86,6 +87,12 @@ const router = createRouter({
       component: Item,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/chat/:sellerId',
+      name: 'Chat',
+      component: Chat,
+      meta: { requiresAuth: true },
+    }
   ]
 });
 
