@@ -6,7 +6,7 @@
         <div class="row">
           <div v-for="product in products" :key="product.id" class="col-lg-4 col-6">
             <div class="card mb-4">
-              <img :src="product.itemPhotoURL" class="card-img-top img-fluid" alt="Product Image" />
+              <img :src="product.itemPhotoURLs[0]" class="card-img-top img-fluid" alt="Product Image" />
               <div class="card-body">
                 <h4 class="card-title product-title">{{ product.itemName }}</h4>
                 <h5 class="card-subtitle mb-2 text-muted product-price">${{ product.itemPrice }}</h5>
@@ -56,6 +56,7 @@
         // Cache products in local storage
         localStorage.setItem(categorySelected, JSON.stringify(fetchedProducts));
         isLoading.value = false;
+        console.log(products);
       } catch (error) {
         console.error('Error fetching products:', error);
         isLoading.value = false; // Stop loading in case of error

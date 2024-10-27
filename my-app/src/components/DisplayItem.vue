@@ -8,11 +8,11 @@
                 <div class="row justify-content-center">
                     <div v-for="product in item" :key="product.id" class="col-lg-3 col-md-4 col-sm-6">
                         <div class="card mb-4" @click="navigateToItem(product)">
-                            <img :src="product.image" class="card-img-top" alt="Product Image">
+                            <img :src="product.itemPhotoURLs[0]" class="card-img-top" alt="Product Image">
                             <div class="card-body">
-                                <h5 class="card-title">{{ product.name }}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">${{ product.price }}</h6>
-                                <p class="card-text">{{ product.seller }}</p>
+                                <h5 class="card-title">{{ product.itemName }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">${{ product.itemPrice }}</h6>
+                                <p class="card-text">{{ product.userName }}</p>
                             </div>
                         </div>
                     </div>
@@ -54,16 +54,18 @@ const fetchProducts = async () => {
   }
 
   try {
-    const querySnapshot = await getDocs(collection(db, 'shoes'));
+    const querySnapshot = await getDocs(collection(db, 'T-shirt'));
     const fetchedProducts: any[] = [];
     querySnapshot.forEach((doc) => {
       fetchedProducts.push({ id: doc.id, ...doc.data() });
     });
+
     products.value = fetchedProducts;
 
     // Cache products in local storage
     localStorage.setItem('products', JSON.stringify(fetchedProducts));
     isLoading.value = false;
+    console.log(fetchedProducts);
   } catch (error) {
     console.error('Error fetching products:', error);
   }
@@ -114,7 +116,6 @@ const groupedProducts = computed(() => {
 function navigateToItem(product: any) { 
     router.push({ name: 'item', params: { id: product.id} }); 
 }
-
 
 // Fetch products on component mount
 onMounted(fetchProducts);

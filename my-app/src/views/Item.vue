@@ -164,16 +164,16 @@
         itemPrice.value = data.price;
         condition.value = data.condition || 'N/A';
         type.value = data.type || 'N/A';
-        listedTime.value = data.listedTime || 'N/A';
+        listedTime.value = data.listedDate || 'N/A';
         username.value = data.username || 'N/A';
         category.value = data.category || 'N/A';
         dealMethod.value = data.dealMethod || 'N/A';
         location.value = data.location || 'N/A';
         description.value = data.description || 'N/A';
-        sellerAvatar.value = data.sellerAvatar || '/path-to-avatar.jpg';
-        sellerName.value = data.sellerName || 'Unknown Seller';
-        rating.value = data.rating || 0;
-        reviews.value = data.reviews || 0;
+        // sellerAvatar.value = data.sellerAvatar || '/path-to-avatar.jpg';
+        // sellerName.value = data.sellerName || 'Unknown Seller';
+        // rating.value = data.rating || 0;
+        // reviews.value = data.reviews || 0;
       } else {
         console.error("No such item!");
       }

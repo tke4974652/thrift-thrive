@@ -106,6 +106,7 @@ const handleSinglePhoto = (event: Event, position: string) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files.length) {
     selectedFiles.value.push({ file: target.files[0], position });
+    console.log(selectedFiles.value);
   }
 };
 
@@ -157,7 +158,7 @@ const handleUpload = async () => {
 };
 
 const handlePhotoUpload = async (itemUID: string, file: File, position: string) => {
-  const storagePath = `item_photos/${itemUID}/${position}.jpg`; // Naming the files as front.jpg, back.jpg, tag.jpg
+  const storagePath = `item_photos/${itemUID}/${position}`; // Naming the files as front.jpg, back.jpg, tag.jpg
   const photoRef = storageRef(storage, storagePath);
   const metadata = {
     contentType: 'image/jpeg', // Set content type to JPEG
