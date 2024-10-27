@@ -261,11 +261,4 @@
   .rounded-4 {
     border-radius: 1rem;
   }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .carousel-img {
-      height: 300px;
-    }
-  }
   </style>
