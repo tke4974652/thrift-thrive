@@ -1,81 +1,249 @@
 <template>
-    <div v-if="isLoading">
-        <Loading :isLoading="isLoading" message="Loading item details..." />
+    <div v-if="isLoading" class="loading-container">
+      <Loading :isLoading="isLoading" message="Loading item details..." />
     </div>
-    <div v-else>
-        <div class="item-container">
-            <img :src="item.image" alt="Product Image" class="item-image" />
-            <h2 class="item-name">{{ item.name }}</h2>
-            <h3 class="item-price">${{ item.price }}</h3>
-            <p class="item-description">{{ item.description }}</p>
-            <p class="item-seller">Sold by: {{ item.seller }}</p>
+    <div v-else class="container-fluid">
+      <!-- Image Carousel Section -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div id="itemCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <div v-for="(image, index) in itemImages" 
+                   :key="index" 
+                   :class="['carousel-item', index === 0 ? 'active' : '']">
+                <img :src="image" class="d-block w-100 carousel-img" :alt="`Product image ${index + 1}`">
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#itemCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#itemCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
         </div>
+      </div>
+  
+      <!-- Main Content -->
+      <div class="row">
+        <!-- Left Column - Item Details -->
+        <div class="col-12 col-lg-8 mb-4">
+          <h1 class="display-6 text-white mb-3">{{ itemName }}</h1>
+          <div class="price-text mb-4" style="color: hsla(160, 100%, 37%, 1)">
+            S${{ itemPrice }}
+          </div>
+  
+          <!-- Item Details -->
+          <div class="row mb-4">
+            <div class="col-6">
+              <div class="detail-box">
+                <h3 class="h6 text-white-50">Condition</h3>
+                <p class="text-white">{{ condition }}</p>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="detail-box">
+                <h3 class="h6 text-white-50">Type</h3>
+                <p class="text-white">{{ type }}</p>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="detail-box">
+                <h3 class="h6 text-white-50">Listed</h3>
+                <p class="text-white">{{ listedTime }}</p>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="detail-box">
+                <h3 class="h6 text-white-50">Category</h3>
+                <p class="text-white">{{ category }}</p>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Deal Method -->
+          <div class="deal-method p-4 mb-4 rounded">
+            <h3 class="h5 text-white mb-3">Deal Method</h3>
+            <p class="text-white mb-2">{{ dealMethod }}</p>
+            <p class="text-white-50 small">{{ location }}</p>
+          </div>
+  
+          <!-- Description -->
+          <div class="mb-4">
+            <h3 class="h5 text-white mb-3">Description</h3>
+            <p class="text-white-50">{{ description }}</p>
+          </div>
+        </div>
+  
+        <!-- Right Column - Seller Info -->
+        <div class="col-12 col-lg-4">
+          <div class="card bg-white rounded-4 p-4">
+            <!-- Seller Info -->
+            <div class="d-flex align-items-center mb-4">
+              <img :src="sellerAvatar" alt="Seller avatar" class="rounded-circle me-3" style="width: 48px; height: 48px;">
+              <div>
+                <h3 class="h5 mb-1">{{ sellerName }}</h3>
+                <div class="d-flex align-items-center">
+                  <span class="text-warning me-1">★</span>
+                  <span class="text-dark">{{ rating }} ({{ reviews }} reviews)</span>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Action Buttons -->
+            <button @click="redirectToChat" class="btn btn-dark w-100 mb-3">
+              Chat with Seller
+            </button>
+  
+            <div class="input-group mb-3">
+              <input 
+                v-model="offerPrice" 
+                type="text" 
+                class="form-control"
+                placeholder="Enter amount"
+              >
+              <button 
+                class="btn text-white" 
+                style="background-color: hsla(160, 100%, 37%, 1)"
+              >
+                Make Offer
+              </button>
+            </div>
+  
+            <!-- Safety Notice -->
+            <div class="small text-muted mt-3">
+              <p class="mb-2">Returns and refunds depend on the seller's decision. Not covered by Buyer Protection.</p>
+              <p class="mb-0">Pay only at the meet-up. Transferring money directly to strangers puts you at risk of e-commerce scams.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</template>
+  </template>
+  
+  <script setup lang="ts">
+  import { ref, onMounted } from 'vue';
+  import { useRoute } from 'vue-router';
+  import { db } from '@/lib/firebaseConfig';
+  import { doc, getDoc } from 'firebase/firestore';
+  import Loading from "@/components/Loading.vue";
+  import { useRouter } from 'vue-router'; // Import useRouter from Vue Router
 
-<script lang="ts" setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { db } from '@/lib/firebaseConfig'; // Adjust path as necessary
-import { doc, getDoc } from 'firebase/firestore';
-import Loading from "@/components/Loading.vue"; // Adjust path as necessary
-
-const route = useRoute();
-const itemId = route.params.id as string;
-const item = ref<any>(null);
-const isLoading = ref(true);
-
-const fetchItem = async () => {
+  const router = useRouter(); // Initialize the router
+  const route = useRoute();
+  const itemId = route.params.id as string;
+  const itemImages = ref<string[]>([]);
+  const itemName = ref('');
+  const itemPrice = ref(0);
+  const condition = ref('');
+  const type = ref('');
+  const listedTime = ref('');
+  const username = ref('');
+  const category = ref('');
+  const dealMethod = ref('');
+  const location = ref('');
+  const description = ref('');
+  const sellerAvatar = ref('/path-to-avatar.jpg');
+  const sellerName = ref('');
+  const sellerId = route.params.sid as string;
+  const rating = ref(0);
+  const reviews = ref(0);
+  const offerPrice = ref('');
+  const isLoading = ref(true);
+  
+  const fetchItem = async () => {
     try {
-        const docRef = doc(db, 'shoes', itemId);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-            item.value = { id: docSnap.id, ...docSnap.data() };
-        } else {
-            console.error("No such item!");
-        }
+      const docRef = doc(db, 'shoes', itemId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        itemImages.value = data.images || [];
+        itemName.value = data.name;
+        itemPrice.value = data.price;
+        condition.value = data.condition || 'N/A';
+        type.value = data.type || 'N/A';
+        listedTime.value = data.listedTime || 'N/A';
+        username.value = data.username || 'N/A';
+        category.value = data.category || 'N/A';
+        dealMethod.value = data.dealMethod || 'N/A';
+        location.value = data.location || 'N/A';
+        description.value = data.description || 'N/A';
+        sellerAvatar.value = data.sellerAvatar || '/path-to-avatar.jpg';
+        sellerName.value = data.sellerName || 'Unknown Seller';
+        rating.value = data.rating || 0;
+        reviews.value = data.reviews || 0;
+      } else {
+        console.error("No such item!");
+      }
     } catch (error) {
-        console.error('Error fetching item:', error);
+      console.error('Error fetching item:', error);
     } finally {
-        isLoading.value = false;
+      isLoading.value = false;
     }
+  };
+  
+  onMounted(fetchItem);
+
+  const redirectToChat = () => {
+  router.push({
+    name: 'Chat',
+    params: { 
+      sellerId: sellerId, 
+      itemId: itemId
+    }
+  });
 };
-
-// Fetch item on component mount
-onMounted(fetchItem);
-</script>
-
-<style scoped>
-.item-container {
+  </script>
+  
+  <style scoped>
+  /* Base page styling */
+  :deep(body) {
+    background-color: #000;
+  }
+  
+  /* Loading container */
+  .loading-container {
+    min-height: 100vh;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    padding: 20px;
-}
-
-.item-image {
-    width: 100%;
-    max-width: 400px;
-    height: auto;
+    justify-content: center;
+    background-color: #000;
+    color: #fff;
+  }
+  
+  /* Carousel image sizing */
+  .carousel-img {
+    height: 500px;
     object-fit: cover;
-}
-
-.item-name {
-    font-size: 2rem;
-    margin: 10px 0;
-}
-
-.item-price {
+  }
+  
+  /* Price styling */
+  .price-text {
     font-size: 1.5rem;
-    color: #555;
-}
-
-.item-description,
-.item-seller {
-    font-size: 1rem;
-    color: #666;
-    text-align: center;
-    margin: 5px 0;
-}
-</style>
+    font-weight: 600;
+  }
+  
+  /* Detail boxes */
+  .detail-box {
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Deal method section */
+  .deal-method {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Custom rounded corners for seller card */
+  .rounded-4 {
+    border-radius: 1rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .carousel-img {
+      height: 300px;
+    }
+  }
+  </style>
