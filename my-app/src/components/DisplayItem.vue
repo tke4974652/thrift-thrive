@@ -1,5 +1,5 @@
 <template>
-        <h2>Trending Kicks</h2>
+        <h2>You may like:</h2>
         <Loading :isLoading="isLoading" message="Fetching your products..." />
         <div v-if="!isLoading">
         <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -12,7 +12,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{ product.itemName }}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">${{ product.itemPrice }}</h6>
-                                <p class="card-text">{{ product.userName }}</p>
+                                <p style="color: black;" class="card-text">{{ product.userName }}</p>
                             </div>
                         </div>
                     </div>
@@ -43,31 +43,24 @@ const router = useRouter(); // Initialize the router
 const products = ref<any[]>([]); // Adjust the type as needed
 const groupSize = ref(0); // Initialize reactive groupSize
 const isLoading = ref(true);
+const categoryList = ['Shoes', 'Accessories', 'Belt', 'T-shirt', 'Jeans', 'Outerwear'];
+const displayCategory = categoryList[Math.floor(Math.random() * categoryList.length)];
 
 const fetchProducts = async () => {
-  // Check local storage first
-  const cachedProducts = localStorage.getItem('products');
-  if (cachedProducts) {
-    isLoading.value = false;
-    products.value = JSON.parse(cachedProducts);
-    return;
-  }
-
   try {
-    const querySnapshot = await getDocs(collection(db, 'T-shirt'));
+    console.log('Fetching products...' + displayCategory);
+    const querySnapshot = await getDocs(collection(db, displayCategory));
     const fetchedProducts: any[] = [];
     querySnapshot.forEach((doc) => {
       fetchedProducts.push({ id: doc.id, ...doc.data() });
     });
 
     products.value = fetchedProducts;
-
-    // Cache products in local storage
-    localStorage.setItem('products', JSON.stringify(fetchedProducts));
     isLoading.value = false;
     console.log(fetchedProducts);
   } catch (error) {
     console.error('Error fetching products:', error);
+    isLoading.value = false; // Ensure loading state is updated even on error
   }
 };
 
@@ -75,12 +68,12 @@ const fetchProducts = async () => {
 const getGroupSize = () => {
   if (window.innerWidth >= 992) { // md size and up
     return 4;
-  } else if (window.innerWidth >= 768){
+  } else if (window.innerWidth >= 768) {
     return 3;
-  } else if (window.innerWidth >= 576){ // sm size
+  } else if (window.innerWidth >= 576) { // sm size
     return 2;
   } else {
-    return 1
+    return 1;
   }
 };
 
@@ -95,6 +88,7 @@ const updateGroupSize = () => {
 // Add event listeners for resize
 onMounted(() => {
   window.addEventListener('resize', updateGroupSize);
+  fetchProducts(); // Fetch products on mount
 });
 
 // Cleanup event listener on component unmount
@@ -104,21 +98,18 @@ onBeforeUnmount(() => {
 
 // Group products based on the determined size
 const groupedProducts = computed(() => {
-    const groups: any[][] = [];
-    
-    for (let i = 0; i < products.value.length; i += groupSize.value) {
-        groups.push(products.value.slice(i, i + groupSize.value));
-    }
-    return groups;
+  const groups: any[][] = [];
+  
+  for (let i = 0; i < products.value.length; i += groupSize.value) {
+    groups.push(products.value.slice(i, i + groupSize.value));
+  }
+  return groups;
 });
 
 // Function to navigate to Item.vue with the product details
 function navigateToItem(product: any) { 
-    router.push({ name: 'item', params: { id: product.id} }); 
+  router.push({ name: 'item', params: { category: displayCategory, id: product.id } }); 
 }
-
-// Fetch products on component mount
-onMounted(fetchProducts);
 </script>
 
 <style scoped>

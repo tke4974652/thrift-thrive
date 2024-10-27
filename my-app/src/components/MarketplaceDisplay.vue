@@ -5,7 +5,7 @@
       <div v-if="!isLoading">
         <div class="row">
           <div v-for="product in products" :key="product.id" class="col-lg-4 col-6">
-            <div class="card mb-4">
+            <div class="card mb-4" @click="navigateToItem(product)">
               <img :src="product.itemPhotoURLs[0]" class="card-img-top img-fluid" alt="Product Image" />
               <div class="card-body">
                 <h4 class="card-title product-title">{{ product.itemName }}</h4>
@@ -25,7 +25,10 @@
   import { db } from '@/lib/firebaseConfig';
   import { collection, getDocs } from 'firebase/firestore';
   import Loading from '@/components/Loading.vue'; // Adjust the path as necessary
-  
+  import { useRouter } from 'vue-router'; // Import useRouter from Vue Router
+
+  const router = useRouter(); // Initialize the router
+
   const props = defineProps<{
     categoryChosen: string;
   }>();
@@ -65,7 +68,11 @@
       isLoading.value = false;
     }
   };
-  
+
+  function navigateToItem(product: any) { 
+  router.push({ name: 'item', params: { category: props.categoryChosen, id: product.id } }); 
+  }
+
   // Watch for changes in the selected category and fetch products accordingly
   watch(() => props.categoryChosen, fetchProducts);
   
