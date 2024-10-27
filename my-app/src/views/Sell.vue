@@ -3,15 +3,15 @@
     <LoadingOverlay :isLoading="isLoading" message="Uploading your item..." />
     <form @submit.prevent="handleUpload" class="upload-form">
       <h2>Upload Item for Sale</h2>
-      <div class="form-group">
-        <label for="item-name">Name:</label>
-        <input type="text" id="item-name" v-model="itemName" placeholder="Enter item name" required />
-      </div>
-      <div class="form-group">
-        <label for="item-description">Description:</label>
-        <textarea id="item-description" v-model="itemDescription" placeholder="Enter item description" required></textarea>
-      </div>
-      <div class="form-group">
+        <div class="form-group">
+          <label for="item-name">Name:</label>
+          <input type="text" id="item-name" v-model="itemName" placeholder="Enter item name" required />
+        </div>
+        <div class="form-group">
+          <label for="item-description">Description:</label>
+          <textarea id="item-description" v-model="itemDescription" placeholder="Enter item description" required></textarea>
+        </div>
+        <div class="form-group">
         <label class="form-label">Upload Photos (Front, Back, Tag):</label>
         <div class="row mb-3">
           <div class="col-4">
@@ -22,7 +22,8 @@
                 accept="image/*" 
                 required 
               />
-              Front Photo
+              <img v-if="previewImages.front" :src="previewImages.front" class="img-thumbnail" alt="Front Photo" />
+              <span v-else>Front Photo</span>
             </label>
           </div>
           <div class="col-4">
@@ -33,7 +34,8 @@
                 accept="image/*" 
                 required 
               />
-              Back Photo
+              <img v-if="previewImages.back" :src="previewImages.back" class="img-thumbnail" alt="Back Photo" />
+              <span v-else>Back Photo</span>
             </label>
           </div>
           <div class="col-4">
@@ -44,12 +46,14 @@
                 accept="image/*" 
                 required 
               />
-              Tag Photo
+              <img v-if="previewImages.tag" :src="previewImages.tag" class="img-thumbnail" alt="Tag Photo" />
+              <span v-else>Tag Photo</span>
             </label>
           </div>
         </div>
         <small class="form-text text-muted">Please upload photos: front, back, and tag.</small>
       </div>
+      <!-- Other fields here -->
       <div class="form-group">
         <label for="item-price">Price:</label>
         <input type="number" id="item-price" v-model="itemPrice" placeholder="Enter item price" required />
@@ -79,6 +83,7 @@
   </section>
 </template>
 
+
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { auth, db, storage } from '../lib/firebaseConfig';
@@ -93,20 +98,29 @@ const itemDescription = ref('');
 const itemPrice = ref(0);
 const chosenCat = ref('');
 const selectedFiles = ref<File[]>([]);
+const previewImages = ref({ front: '', back: '', tag: '' }); // Reactive object for image previews
 const userName = ref('');
 
 // Additional Fields
 const condition = ref('');
 const dealMethod = ref('');
 const location = ref('');
-const date = new Date()
+const date = new Date();
 const listedDate = date.toISOString().split('T')[0];
+const itemPhotoURLs: string[] = [];
 
 const handleSinglePhoto = (event: Event, position: string) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files.length) {
-    selectedFiles.value.push({ file: target.files[0], position });
-    console.log(selectedFiles.value);
+    const file = target.files[0];
+    selectedFiles.value.push({ file, position });
+    
+    // Generate a preview URL and update the previewImages object
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImages.value[position] = e.target.result as string; // Set the preview image
+    };
+    reader.readAsDataURL(file); // Read the file as a data URL
   }
 };
 
@@ -124,6 +138,7 @@ const handleUpload = async () => {
     }
     
     isLoading.value = true; // Start loading overlay
+    console.log("handle upload" + chosenCat.value)
     const itemDocRef = doc(collection(db, chosenCat.value));
     const itemUID = itemDocRef.id;
 
@@ -149,6 +164,7 @@ const handleUpload = async () => {
       handlePhotoUpload(itemUID, selectedFiles.value[2], 'tag'),
     ]);
     
+    updateUpload(itemUID, itemPhotoURLs);
     alert(`Item uploaded successfully! Item UID: ${itemUID}`);
     isLoading.value = false;
   } else {
@@ -160,24 +176,24 @@ const handleUpload = async () => {
 const handlePhotoUpload = async (itemUID: string, file: File, position: string) => {
   const storagePath = `item_photos/${itemUID}/${position}`; // Naming the files as front.jpg, back.jpg, tag.jpg
   const photoRef = storageRef(storage, storagePath);
-  const metadata = {
-    contentType: 'image/jpeg', // Set content type to JPEG
-  };
-  await uploadBytes(photoRef, file, metadata);
-  const downloadURL = await getDownloadURL(photoRef);
 
+  console.log(file.file);
+  await uploadBytes(photoRef, file.file);
+  const downloadURL = await getDownloadURL(photoRef);
+  itemPhotoURLs.push(downloadURL);
+  console.log(downloadURL);
   // Update Firestore document with the photo URL
-  await updateUpload(itemUID, downloadURL);
 };
 
-const updateUpload = async (itemUID: string, downloadURL: string) => {
+const updateUpload = async (itemUID: string, itemPhotoURLs: unknown) => {
   const currentUser = auth.currentUser;
   if (currentUser) {
+    console.log("update upload" + chosenCat.value)
     const itemDocRef = doc(collection(db, chosenCat.value), itemUID);
     
     // Update Firestore document with the new photo URL
     await setDoc(itemDocRef, {
-      itemPhotoURLs: arrayUnion(downloadURL), // Append to the array
+      itemPhotoURLs: itemPhotoURLs, // Append to the array
     }, { merge: true });
 
     const uploadData = {
