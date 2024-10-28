@@ -9,6 +9,7 @@ import Sell from '../views/Sell.vue';
 import ThriftMap from '../views/ThriftMap.vue';
 import Item from '../views/Item.vue';
 import Chat from '../views/Chat.vue';
+import Editorial from '../views/Editorial.vue';
 
 // Function to check if user is logged in
 const isLoggedIn = () => {
@@ -52,9 +53,9 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/fashion-blog',
-      name: 'fashion-blog',
-      component: Marketplace,
+      path: '/editorial',
+      name: 'editorial',
+      component: Editorial,
       meta: { requiresAuth: true },
     },
     {
@@ -89,10 +90,11 @@ const router = createRouter({
     },
     {
       path: '/chat/:sellerId',
-      name: 'Chat',
+      name: 'chat-with-seller',
       component: Chat,
       meta: { requiresAuth: true },
-    }
+    },
+    
   ]
 });
 
